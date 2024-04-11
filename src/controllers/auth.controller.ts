@@ -122,3 +122,72 @@ export const signOut = async (req: Request, res: Response) => {
     console.log(`ERROR:IN SIGNOUT CONTROLLER ${error}`);
   }
 };
+
+// Google Authentication;
+export const google = async (req: Request, res: Response) => {
+  const { name, email, googlePhotoUrl } = req.body;
+  try {
+    const user = await User.findOne({ email });
+    // check for user ,if user exists then we create an token and cookie and return but user not exist then we need to create an user;
+    if (user) {
+      const token = jwt.sign(
+        { id: user._id, isAdmin: user.isAdmin },
+        process.env.JWT_SECRET_KEY as string
+      );
+      //seperating password from user;
+
+      return res
+        .status(200)
+        .cookie("access_token", token, {
+          httpOnly: true,
+          path: "/",
+          maxAge: 15 * 24 * 60 * 60 * 1000,
+        })
+        .json({
+          success: true,
+          message: "User Signed in",
+          user,
+        });
+    } else {
+      //creating user
+
+      const generatedPassword =
+        Math.random().toString(36).slice(-8) +
+        Math.random().toString(36).slice(-8);
+      const hashedPassword = bcryptjs.hashSync(generatedPassword, 10);
+
+      // creating unique username;
+      const generatedUserName =
+        name.toLowerCase().split(" ").join("") +
+        Math.floor(Math.random() * 10000 + 1);
+
+      const newUser = await User.create({
+        username: generatedUserName,
+        email,
+        password: hashedPassword,
+        profilePicture: googlePhotoUrl,
+      });
+
+      // now creating token and cookie;
+      const token = jwt.sign(
+        { id: newUser._id, isAdmin: newUser.isAdmin },
+        process.env.JWT_SECRET_KEY as string
+      );
+
+      return res
+        .status(200)
+        .cookie("access_token", token, {
+          httpOnly: true,
+          path: "/",
+          maxAge: 15 * 24 * 60 * 60 * 1000,
+        })
+        .json({
+          success: true,
+          message: "User sign up successfully",
+          user: newUser,
+        });
+    }
+  } catch (error) {
+    console.log(`ERROR:WHILE SIGNUP USING GOOGLE CONTROLLER ${error}`);
+  }
+};
