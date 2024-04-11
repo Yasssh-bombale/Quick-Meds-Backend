@@ -8,6 +8,6 @@ export const MongoConnection = async () => {
 
     console.log(`MongoDB connected !`);
   } catch (error) {
-    console.log(`ERROR:While connecting to mongoDB`);
+    console.log(`ERROR:While connecting to mongoDB ${error}`);
   }
 };

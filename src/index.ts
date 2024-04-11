@@ -12,6 +12,7 @@ const PORT = 8000;
 config();
 
 app.use(cors());
+
 app.use(express.json());
 app.use(cookieParser());
 

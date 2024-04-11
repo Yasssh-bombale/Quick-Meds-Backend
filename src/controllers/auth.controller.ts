@@ -9,12 +9,22 @@ export const signUp = async (
 ) => {
   try {
     const { username, email, password } = req.body;
+    if (
+      !username ||
+      !email ||
+      !password ||
+      username === "" ||
+      email === "" ||
+      password === ""
+    ) {
+      return res.status(400).json({ message: "All fields are required" });
+    }
 
     //checking size of username;
     if (username.length < 7 || username.length > 20) {
       return res
         .status(400)
-        .json({ message: "Username must be between 7-20 characters" });
+        .json({ message: "username must be betweem 7 and 20 characters" });
     }
     if (!username.match(/^[a-zA-Z0-9]+$/)) {
       return res
@@ -38,8 +48,7 @@ export const signUp = async (
         .status(400)
         .json({ message: "Password must be at least 6 characters" });
     }
-
-    //check for user already eixits in dataBase
+    //check for user already eixits in dataBase;
     const isEmailTaken = await User.findOne({ email });
     const isUserNameTaken = await User.findOne({ username });
 
@@ -91,7 +100,9 @@ export const signIn = async (req: Request, res: Response) => {
     return res
       .status(200)
       .cookie("access_token", token, {
-        httpOnly: true,
+        httpOnly: false,
+        path: "/",
+        maxAge: 15 * 24 * 60 * 60 * 1000,
       })
       .json({
         success: true,
