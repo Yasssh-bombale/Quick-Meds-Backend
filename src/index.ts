@@ -19,6 +19,10 @@ app.use(cookieParser());
 app.use("/api/auth", authRouter);
 app.use("/api/user", userRouter);
 
+app.get("/health", (req: Request, res: Response) => {
+  return res.json({ message: "Health OK!" });
+});
+
 app.listen(process.env.PORT, () => {
   MongoConnection();
   console.log(`Backend running on PORT : http://localhost:${process.env.PORT}`);
