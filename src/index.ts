@@ -3,6 +3,7 @@ import { config } from "dotenv";
 import cors from "cors";
 import authRouter from "./routers/auth.router";
 import userRouter from "./routers/user.router";
+import storeRouter from "./routers/store.router";
 import { MongoConnection } from "./database/mongoDB";
 import cookieParser from "cookie-parser";
 
@@ -18,6 +19,7 @@ app.use(cookieParser());
 
 app.use("/api/auth", authRouter);
 app.use("/api/user", userRouter);
+app.use("/api/store", storeRouter);
 
 app.get("/health", (req: Request, res: Response) => {
   return res.json({ message: "Health OK!" });
