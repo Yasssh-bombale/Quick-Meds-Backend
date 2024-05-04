@@ -35,8 +35,8 @@ export const createStore = async (req: Request, res: Response) => {
 
     if (userHasStore) {
       return res
-        .status(401)
-        .json({ message: "You are not allowed to create multiple stores" });
+        .status(403)
+        .json({ msg: "You are not allowed to create multiple stores" });
     }
 
     // check for the storeName because storeName must be unique;
