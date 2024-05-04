@@ -8,7 +8,7 @@ interface storeSchemaObject extends Document {
   address: string;
   state: string;
   city: string;
-  imageUrl: string;
+  imageUrl?: string;
   mobileNumber: string;
 }
 
