@@ -2,6 +2,8 @@
 import mongoose, { Schema, Document } from "mongoose";
 
 interface storeSchemaObject extends Document {
+  ownerId: mongoose.Schema.Types.ObjectId;
+  ownerName: string;
   storeName: string;
   address: string;
   state: string;
@@ -12,6 +14,15 @@ interface storeSchemaObject extends Document {
 
 const storeSchema: Schema<storeSchemaObject> = new Schema(
   {
+    ownerId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
+    ownerName: {
+      type: String,
+      required: true,
+    },
     storeName: {
       type: String,
       required: true,
@@ -42,4 +53,4 @@ const storeSchema: Schema<storeSchemaObject> = new Schema(
   { timestamps: true }
 );
 
-export const Store = mongoose.model("Store", storeSchema);
+export const Store = mongoose.model<storeSchemaObject>("Store", storeSchema);
