@@ -78,3 +78,15 @@ export const getMyStore = async (req: Request, res: Response) => {
     return res.status(500).json({ message: "ERROR_IN_GETMYSTORE_CONTROLLER" });
   }
 };
+
+export const getAllStores = async (req: Request, res: Response) => {
+  try {
+    const stores = await Store.find();
+    if (stores.length === 0) {
+      return res.status(404).json({ message: "No stores found" });
+    }
+    return res.status(200).json(stores);
+  } catch (error) {
+    console.log(`ERROR_IN_GET-ALL-STORES, ${error}`);
+  }
+};
