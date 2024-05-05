@@ -3,9 +3,6 @@ import { Store } from "../models/store.model";
 import { UserType } from "../types";
 import User from "../models/user.model";
 
-export const test = (req: Request, res: Response) => {
-  res.send("ok");
-};
 export const createStore = async (req: Request, res: Response) => {
   try {
     const { userId } = req.params;
@@ -64,5 +61,20 @@ export const createStore = async (req: Request, res: Response) => {
     return res
       .status(500)
       .json({ message: "ERROR_IN_CREATE-STORE_CONTROLLER" });
+  }
+};
+
+export const getMyStore = async (req: Request, res: Response) => {
+  const { userId } = req.params;
+  try {
+    const store = await Store.findOne({ ownerId: userId });
+    if (!store) {
+      return res.status(404).json({ message: "No store found" });
+    }
+
+    return res.status(200).json(store);
+  } catch (error) {
+    console.log(`ERROR_IN_GETMYSTORE_CONTROLLER,${error}`);
+    return res.status(500).json({ message: "ERROR_IN_GETMYSTORE_CONTROLLER" });
   }
 };
