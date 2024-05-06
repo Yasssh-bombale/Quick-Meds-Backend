@@ -38,10 +38,10 @@ export const createStore = async (req: Request, res: Response) => {
 
     // check for the storeName because storeName must be unique;
 
-    const isStoreNameTaken = await Store.findOne({ storeName });
-    if (isStoreNameTaken) {
-      return res.status(401).json({ message: "Store name already taken" });
-    }
+    // const isStoreNameTaken = await Store.findOne({ storeName });
+    // if (isStoreNameTaken) {
+    //   return res.status(401).json({ message: "Store name already taken" });
+    // }
 
     // creating store;
     const store = await Store.create({
@@ -81,11 +81,28 @@ export const getMyStore = async (req: Request, res: Response) => {
 
 export const getAllStores = async (req: Request, res: Response) => {
   try {
-    const stores = await Store.find();
+    const page = parseInt(req.query.page as string) || 1;
+    const pageSize = 10;
+    const skip = (page - 1) * pageSize;
+
+    const stores = await Store.find().skip(skip).limit(pageSize);
+
     if (stores.length === 0) {
       return res.status(404).json({ message: "No stores found" });
     }
-    return res.status(200).json(stores);
+
+    const total = await Store.countDocuments();
+
+    const response = {
+      data: stores,
+      pagination: {
+        total,
+        page,
+        pages: Math.ceil(total / pageSize),
+      },
+    };
+
+    return res.status(200).json(response);
   } catch (error) {
     console.log(`ERROR_IN_GET-ALL-STORES, ${error}`);
   }

@@ -26,7 +26,6 @@ const storeSchema: Schema<storeSchemaObject> = new Schema(
     storeName: {
       type: String,
       required: true,
-      unique: true,
     },
     address: {
       type: String,
