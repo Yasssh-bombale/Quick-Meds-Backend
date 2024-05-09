@@ -7,9 +7,9 @@ interface orderSchemaObject extends Document {
   userProfile: string;
   prescriptionImage: string;
   prescription: string;
-  city: string;
-  state: string;
-  address: string;
+  deliveryCity: string;
+  deliveryState: string;
+  deliveryAddress: string;
 }
 
 const OrderSchema: Schema<orderSchemaObject> = new Schema(
@@ -37,6 +37,18 @@ const OrderSchema: Schema<orderSchemaObject> = new Schema(
       required: true,
     },
     prescription: {
+      type: String,
+      required: true,
+    },
+    deliveryCity: {
+      type: String,
+      required: true,
+    },
+    deliveryState: {
+      type: String,
+      required: true,
+    },
+    deliveryAddress: {
       type: String,
       required: true,
     },

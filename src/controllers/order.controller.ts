@@ -4,7 +4,7 @@ import User from "../models/user.model";
 import Order from "../models/store-orders.model";
 
 export const createOrder = async (req: Request, res: Response) => {
-  const { imageUrl, prescription, city, state, address } = req.body;
+  const { imageUrl, prescription } = req.body;
   const { storeId, userId } = req.query;
 
   if (!storeId || !userId) {
@@ -13,7 +13,7 @@ export const createOrder = async (req: Request, res: Response) => {
       .json({ message: "Both storeId and userId is required" });
   }
 
-  if (!imageUrl || !prescription || !city || !state || !address) {
+  if (!imageUrl || !prescription) {
     return res.status(400).json({
       message: "All fields are required",
     });
@@ -33,6 +33,13 @@ export const createOrder = async (req: Request, res: Response) => {
       });
     }
 
+    //checking if user has city,state,address or not;
+    if (!user.city || !user.state || !user.address) {
+      return res.status(403).json({
+        message: "Shipping address is missing kindly update your profile",
+      });
+    }
+
     //if both storeId and userId is valid;
     // create Order;
     const order = await Order.create({
@@ -42,9 +49,9 @@ export const createOrder = async (req: Request, res: Response) => {
       userProfile: user.profilePicture,
       prescriptionImage: imageUrl,
       prescription,
-      city,
-      state,
-      address,
+      deliveryCity: user.city,
+      deliveryState: user.state,
+      deliveryAddress: user.address,
     });
 
     return res.status(201).json({
