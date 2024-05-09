@@ -107,3 +107,21 @@ export const getAllStores = async (req: Request, res: Response) => {
     console.log(`ERROR_IN_GET-ALL-STORES, ${error}`);
   }
 };
+
+export const getStoreDetials = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    if (!id) {
+      return res.status(400).json({ message: "Store Id is required" });
+    }
+
+    const store = await Store.findById(id);
+    if (!store) {
+      return res.status(404).json({ message: "No store found" });
+    }
+
+    return res.status(200).json(store);
+  } catch (error) {
+    console.log(`ERROR:IN GetStoreDetails route, ${error}`);
+  }
+};
