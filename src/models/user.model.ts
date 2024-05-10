@@ -5,6 +5,7 @@ interface userSchemaObject extends Document {
   email: string;
   password: string;
   profilePicture: string;
+  mobileNumber?: string;
   city?: string;
   state?: string;
   address?: string;
@@ -29,6 +30,9 @@ const userSchema: Schema<userSchemaObject> = new mongoose.Schema(
       type: String,
       default:
         "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png",
+    },
+    mobileNumber: {
+      type: String,
     },
     city: {
       type: String,

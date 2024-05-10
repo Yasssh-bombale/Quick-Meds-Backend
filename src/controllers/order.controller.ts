@@ -33,8 +33,8 @@ export const createOrder = async (req: Request, res: Response) => {
       });
     }
 
-    //checking if user has city,state,address or not;
-    if (!user.city || !user.state || !user.address) {
+    //checking if user has city,state,address,mobileNumber or not;
+    if (!user.city || !user.state || !user.address || !user.mobileNumber) {
       return res.status(403).json({
         message: "Shipping address is missing kindly update your profile",
       });
