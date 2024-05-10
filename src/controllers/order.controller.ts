@@ -65,3 +65,26 @@ export const createOrder = async (req: Request, res: Response) => {
     });
   }
 };
+
+// get orders for current signed in user;
+export const getUserOrders = async (req: Request, res: Response) => {
+  const { userId, storeId } = req.query;
+  if (!userId || !storeId) {
+    return res.status(403).json("Both userId and storeId is required");
+  }
+  const query = {
+    userId,
+    storeId,
+  };
+  try {
+    const orders = await Order.find(query);
+    if (orders.length === 0) {
+      return res.status(404).json([]); //No orders found;
+    }
+
+    return res.status(200).json(orders);
+  } catch (error) {
+    console.log(`ERROR:IN GET-USER-ORDERS,${error}`);
+    return res.status(500).json("ERROR:IN GET-USER-ORDERS");
+  }
+};
