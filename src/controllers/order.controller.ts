@@ -46,6 +46,7 @@ export const createOrder = async (req: Request, res: Response) => {
       storeId,
       userId,
       orderedBy: user.username,
+      customerMobileNumber: user.mobileNumber,
       userProfile: user.profilePicture,
       prescriptionImage: imageUrl,
       prescription,

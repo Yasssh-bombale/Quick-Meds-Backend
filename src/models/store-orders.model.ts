@@ -5,6 +5,7 @@ interface orderSchemaObject extends Document {
   userId: mongoose.Schema.Types.ObjectId;
   orderedBy: string; //userName
   userProfile: string;
+  customerMobileNumber: string;
   prescriptionImage: string;
   prescription: string;
   deliveryCity: string;
@@ -26,6 +27,10 @@ const OrderSchema: Schema<orderSchemaObject> = new Schema(
     },
     orderedBy: {
       type: String, //userName
+      required: true,
+    },
+    customerMobileNumber: {
+      type: String,
       required: true,
     },
     userProfile: {
