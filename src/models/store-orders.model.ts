@@ -11,6 +11,8 @@ interface orderSchemaObject extends Document {
   deliveryCity: string;
   deliveryState: string;
   deliveryAddress: string;
+  isOrderPlaced: boolean;
+  isOrderOutOffStock: boolean;
 }
 
 const OrderSchema: Schema<orderSchemaObject> = new Schema(
@@ -56,6 +58,14 @@ const OrderSchema: Schema<orderSchemaObject> = new Schema(
     deliveryAddress: {
       type: String,
       required: true,
+    },
+    isOrderPlaced: {
+      type: Boolean,
+      default: false,
+    },
+    isOrderOutOffStock: {
+      type: Boolean,
+      default: false,
     },
   },
   { timestamps: true }

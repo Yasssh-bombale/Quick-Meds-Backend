@@ -89,3 +89,45 @@ export const getUserOrders = async (req: Request, res: Response) => {
     return res.status(500).json("ERROR:IN GET-USER-ORDERS");
   }
 };
+
+//get orders for storeOwners;
+export const getOrdersForStore = async (req: Request, res: Response) => {
+  const { userId } = req.params;
+
+  if (!userId) {
+    return res.status(400).json({ message: "userId is required" });
+  }
+
+  try {
+    //check whether the user is owner of the store or not;
+    const store = await Store.findOne({ ownerId: userId });
+    if (!store) {
+      return res
+        .status(404)
+        .json({ message: "You have no store kindly create new one" });
+    }
+
+    //if use is owner of any one of the stores then checking orders for the store;
+    const orders = await Order.find({ storeId: store._id });
+
+    //count total number of orders on store;
+
+    const totalOrders = await Order.countDocuments({ storeId: store._id });
+
+    //if store has any orders then return orders for the store;
+
+    const response = {
+      totalOrders,
+      storeDetails: {
+        storeName: store.storeName,
+        storeImage: store.imageUrl,
+      },
+      orders,
+    };
+
+    return res.status(200).json(response);
+  } catch (error) {
+    console.log(`ERROR:IN GET-ORDERS-FOR-STORES ,${error}`);
+    return res.status(500).json("ERROR:IN GET-ORDERS-FOR-STORES");
+  }
+};
