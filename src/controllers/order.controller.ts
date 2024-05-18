@@ -131,3 +131,67 @@ export const getOrdersForStore = async (req: Request, res: Response) => {
     return res.status(500).json("ERROR:IN GET-ORDERS-FOR-STORES");
   }
 };
+
+export const placeOrder = async (req: Request, res: Response) => {
+  const { userId, orderId } = req.query;
+  if (!userId || !orderId) {
+    return res.status(400).json("Both userId and storeId is required");
+  }
+  try {
+    const store = await Store.findOne({ ownerId: userId }); //check if user is owner or not;
+    if (!store) {
+      return res.status(403).json({ message: "Unauthorized" });
+    }
+
+    // if user is owner of the store then he has power to place order or reject order;
+
+    // when user click on place order then update order to be placed;
+    const order = await Order.findByIdAndUpdate(
+      orderId,
+      {
+        isOrderPlaced: true,
+      },
+      {
+        new: true,
+      }
+    );
+
+    //then return order placed message wih updated order;
+    return res.status(201).json({ message: "Order placed", order });
+  } catch (error) {
+    console.log(`ERROR:IN PLACE-ORDER-CONTROLLER ,${error}`);
+    return res.status(500).json("ERROR:IN PLACE-ORDER-CONTROLLER");
+  }
+};
+
+export const outOfStockHandler = async (req: Request, res: Response) => {
+  const { userId, orderId } = req.query;
+  if (!userId || !orderId) {
+    return res.status(400).json("Both userId and storeId is required");
+  }
+  try {
+    const store = await Store.findOne({ ownerId: userId }); //check if user is owner or not;
+    if (!store) {
+      return res.status(403).json({ message: "Unauthorized" });
+    }
+
+    // if user is owner of the store then he has power to make order out-of-stock or reject order;
+
+    // when user click on out-of-stock order then update order to be order-out-of-stock;
+    const order = await Order.findByIdAndUpdate(
+      orderId,
+      {
+        isOrderOutOffStock: true,
+      },
+      {
+        new: true,
+      }
+    );
+
+    //then return order placed message wih updated order;
+    return res.status(201).json({ message: "make order outofstock!", order });
+  } catch (error) {
+    console.log(`ERROR:IN ORDER-OUTOFSTOCK-CONTROLLER ,${error}`);
+    return res.status(500).json("ERROR:ORDER-OUTOFSTOCK-CONTROLLER");
+  }
+};
