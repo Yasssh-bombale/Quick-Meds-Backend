@@ -67,7 +67,7 @@ export const createOrder = async (req: Request, res: Response) => {
   }
 };
 
-// get orders for current signed in user;
+// get orders for current signed in user for the specified store;
 export const getUserOrders = async (req: Request, res: Response) => {
   const { userId, storeId } = req.query;
   if (!userId || !storeId) {
@@ -87,6 +87,26 @@ export const getUserOrders = async (req: Request, res: Response) => {
   } catch (error) {
     console.log(`ERROR:IN GET-USER-ORDERS,${error}`);
     return res.status(500).json("ERROR:IN GET-USER-ORDERS");
+  }
+};
+
+// get orders for current user from all stores;
+export const getUserOrderFromAllStores = async (
+  req: Request,
+  res: Response
+) => {
+  const { userId } = req.params;
+
+  try {
+    const orders = await Order.find({ userId });
+    if (orders.length === 0) {
+      return res.status(404).json([]);
+    }
+
+    return res.status(200).json(orders);
+  } catch (error) {
+    console.log(`ERROR:IN GET-USER-ORDER-FROM-ALL-STORES,${error}`);
+    return res.status(500).json("ERROR:IN GET-USER-ORDER-FROM-ALL-STORES");
   }
 };
 
