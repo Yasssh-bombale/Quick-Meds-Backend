@@ -3,6 +3,7 @@ import mongoose, { Schema, Document } from "mongoose";
 interface orderSchemaObject extends Document {
   storeId: mongoose.Schema.Types.ObjectId;
   userId: mongoose.Schema.Types.ObjectId;
+  storeName: string;
   orderedBy: string; //userName
   userProfile: string;
   customerMobileNumber: string;
@@ -25,6 +26,10 @@ const OrderSchema: Schema<orderSchemaObject> = new Schema(
     userId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
+      required: true,
+    },
+    storeName: {
+      type: String,
       required: true,
     },
     orderedBy: {

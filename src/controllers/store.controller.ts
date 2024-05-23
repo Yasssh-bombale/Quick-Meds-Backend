@@ -85,7 +85,10 @@ export const getAllStores = async (req: Request, res: Response) => {
     const pageSize = 10;
     const skip = (page - 1) * pageSize;
 
-    const stores = await Store.find().skip(skip).limit(pageSize);
+    const stores = await Store.find()
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(pageSize); //getting latest order
 
     if (stores.length === 0) {
       return res.status(404).json({ message: "No stores found" });

@@ -45,6 +45,7 @@ export const createOrder = async (req: Request, res: Response) => {
     const order = await Order.create({
       storeId,
       userId,
+      storeName: store.storeName,
       orderedBy: user.username,
       customerMobileNumber: user.mobileNumber,
       userProfile: user.profilePicture,
@@ -98,7 +99,7 @@ export const getUserOrderFromAllStores = async (
   const { userId } = req.params;
 
   try {
-    const orders = await Order.find({ userId });
+    const orders = await Order.find({ userId }).sort({ createdAt: -1 }); //get latest order
     if (orders.length === 0) {
       return res.status(404).json([]);
     }
@@ -127,8 +128,10 @@ export const getOrdersForStore = async (req: Request, res: Response) => {
         .json({ message: "You have no store kindly create new one" });
     }
 
-    //if use is owner of any one of the stores then checking orders for the store;
-    const orders = await Order.find({ storeId: store._id });
+    //if user is owner of any one of the stores then checking orders for the store;
+    const orders = await Order.find({ storeId: store._id }).sort({
+      createdAt: -1,
+    }); //getting latest orders first;
 
     //count total number of orders on store;
 
