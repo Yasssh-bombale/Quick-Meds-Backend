@@ -128,3 +128,20 @@ export const getStoreDetials = async (req: Request, res: Response) => {
     console.log(`ERROR:IN GetStoreDetails route, ${error}`);
   }
 };
+
+//check for user has any store or not;
+export const isUserHasStore = async (req: Request, res: Response) => {
+  const { userId } = req.params;
+
+  try {
+    const store = await Store.findOne({ ownerId: userId });
+
+    if (!store) {
+      return res.status(404).json({ userHasStore: false });
+    }
+    return res.status(200).json({ userHasStore: true });
+  } catch (error) {
+    console.log(`ERROR:IN IS-USER-HAS-STORE-CONTROLLER,${error}`);
+    return res.status(500).json("ERROR:IN IS-USER-HAS-STORE-CONTROLLER");
+  }
+};

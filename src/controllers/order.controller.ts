@@ -124,7 +124,7 @@ export const getOrdersForStore = async (req: Request, res: Response) => {
     const store = await Store.findOne({ ownerId: userId });
     if (!store) {
       return res
-        .status(404)
+        .status(403)
         .json({ message: "You have no store kindly create new one" });
     }
 
