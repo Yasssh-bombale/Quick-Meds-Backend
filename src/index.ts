@@ -5,6 +5,7 @@ import authRouter from "./routers/auth.router";
 import userRouter from "./routers/user.router";
 import storeRouter from "./routers/store.router";
 import orderRouter from "./routers/store-orders.route";
+import conversationRouter from "./routers/conversation.route";
 import { MongoConnection } from "./database/mongoDB";
 import cookieParser from "cookie-parser";
 
@@ -22,6 +23,7 @@ app.use("/api/auth", authRouter);
 app.use("/api/user", userRouter);
 app.use("/api/store", storeRouter);
 app.use("/api/order", orderRouter);
+app.use("/api/conversation", conversationRouter);
 
 app.get("/health", (req: Request, res: Response) => {
   return res.json({ message: "Health OK!" });
