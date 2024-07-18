@@ -3,12 +3,14 @@ import Conversation from "../models/conversation.model";
 
 export const createMessage = async (req: Request, res: Response) => {
   const { userId, storeId } = req.query;
-  const { prescriptionImage, message, role, type } = req.body;
+  const { prescriptionImage, prescription: message, type } = req.body;
+  const role = "user";
+  //IMPORTANT=> role: it can only be define at backend because user can able to update it as owner on frontend;
   if (!userId || !storeId) {
     return res.status(400).json("All query params is required");
   }
 
-  if (!message || !role) {
+  if (!message) {
     return res.status(400).json("Both message and role is required");
   }
 
