@@ -3,7 +3,7 @@ import Conversation from "../models/conversation.model";
 
 export const createMessage = async (req: Request, res: Response) => {
   const { userId, storeId } = req.query;
-  const { prescriptionImage, message, role } = req.body;
+  const { prescriptionImage, message, role, type } = req.body;
   if (!userId || !storeId) {
     return res.status(400).json("All query params is required");
   }
@@ -16,6 +16,7 @@ export const createMessage = async (req: Request, res: Response) => {
     const conversation = await Conversation.create({
       userId,
       storeId,
+      type,
       role,
       prescriptionImage,
       message,
@@ -54,6 +55,8 @@ export const getMessages = async (req: Request, res: Response) => {
     console.log(
       `ERROR:IN CONTROLLER:[CONVERSATION,Fun(getMessages)] ,${error}`
     );
-    res.send(`ERROR: IN CONTROLLER:[CONVERSATION,Fun(getMessages)],${error}`);
+    res
+      .status(500)
+      .json(`ERROR: IN CONTROLLER:[CONVERSATION,Fun(getMessages)],${error}`);
   }
 };
