@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import Conversation from "../models/conversation.model";
 
-export const createMessage = async (req: Request, res: Response) => {
+export const createUserMessage = async (req: Request, res: Response) => {
   const { userId, storeId } = req.query;
   const { prescriptionImage, prescription: message, type } = req.body;
   const role = "user";
@@ -34,7 +34,7 @@ export const createMessage = async (req: Request, res: Response) => {
 };
 
 //finding conversation for the specified store and based on currentLogin user;
-export const getMessages = async (req: Request, res: Response) => {
+export const getUserMessages = async (req: Request, res: Response) => {
   const { userId, storeId } = req.query;
 
   if (!userId || !storeId) {

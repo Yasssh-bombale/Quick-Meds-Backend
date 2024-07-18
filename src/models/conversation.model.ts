@@ -12,6 +12,7 @@ interface conversationSchemaObject extends Document {
   storeId: mongoose.Schema.Types.ObjectId;
   userId: mongoose.Schema.Types.ObjectId;
   type: MessageType;
+  amount: String;
   role: UserRole;
   message: string;
   prescriptionImage: string;
@@ -26,6 +27,10 @@ const ConversationSchema: Schema<conversationSchemaObject> = new Schema(
       enum: Object.values(MessageType),
       default: MessageType.message,
       required: true,
+    },
+    amount: {
+      type: String,
+      default: "0",
     },
     role: {
       type: String,
