@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import Conversation from "../models/conversation.model";
 import { Store } from "../models/store.model";
+import User from "../models/user.model";
 
 export const createUserMessage = async (req: Request, res: Response) => {
   const { userId, storeId } = req.query;
@@ -16,9 +17,16 @@ export const createUserMessage = async (req: Request, res: Response) => {
   }
 
   try {
+    const user = await User.findOne({ _id: userId });
+    if (!user) {
+      return res.status(404).json("No user found");
+    }
+
     const conversation = await Conversation.create({
       userId,
       storeId,
+      senderName: user.username,
+      senderProfile: user.profilePicture,
       type,
       role,
       prescriptionImage,
@@ -60,14 +68,16 @@ export const getUserMessages = async (req: Request, res: Response) => {
     );
     res
       .status(500)
-      .json(`ERROR: IN CONTROLLER:[CONVERSATION,Fun(getMessages)],${error}`);
+      .json(
+        `ERROR: IN CONTROLLER:[CONVERSATION,Fun(getUserMessages)],${error}`
+      );
   }
 };
 
 //finding conversation for storeOwners;
 
 export const getStoreConversations = async (req: Request, res: Response) => {
-  const { userId } = req.query;
+  const { userId, clickedUserId } = req.query; //this userId is storeOwners userId;
   if (!userId) {
     return res.status(403).json("userId is required");
   }
@@ -78,24 +88,37 @@ export const getStoreConversations = async (req: Request, res: Response) => {
       return res.status(404).json("No store found");
     }
 
-    // if user is owner of one of the stores;then finding all conversations on the store;
-    const conversations = await Conversation.find({ storeId: store._id });
+    //step1: i want to send below response only when storeOwner does not clicked any userMessage
+    if (!clickedUserId) {
+      // if user is owner of one of the stores;then finding all conversations on the store;
+      const conversations = await Conversation.find({
+        storeId: store._id,
+      }).sort({
+        createdAt: -1,
+      });
 
-    if (conversations.length === 0) {
-      return res.status(200).json([]); //sending empty array to handle it on frontend;
-    }
-    // Remove duplicate conversations based on userId
-
-    const uniqueArray: string[] = [];
-    let demo: any = [];
-    conversations.map((convo) => {
-      if (!uniqueArray.includes(JSON.stringify(convo.userId))) {
-        uniqueArray.push(JSON.stringify(convo.userId));
-        demo = [...demo, convo];
+      if (conversations.length === 0) {
+        return res.status(200).json([]); //sending empty array to handle it on frontend;
       }
-    });
-    console.log(demo);
-    return res.status(200).json(demo);
+      // Remove duplicate conversations based on userId
+
+      const uniqueArray: string[] = [];
+      let demo: any = [];
+      conversations.map((convo) => {
+        if (!uniqueArray.includes(JSON.stringify(convo.userId))) {
+          uniqueArray.push(JSON.stringify(convo.userId));
+          demo = [...demo, convo];
+        }
+      });
+
+      return res.status(200).json(demo);
+    }
+
+    //step2: if storeOwner clicks anyOneOfthe userMessages/clickedUserIds then send below response;
+
+    const conversations = await Conversation.find({ userId: clickedUserId });
+
+    return res.status(200).json(conversations);
   } catch (error) {
     console.log(
       `ERROR:IN CONTROLLER:[CONVERSATION,Fun(getStoreConversations)] ,${error}`
@@ -107,3 +130,5 @@ export const getStoreConversations = async (req: Request, res: Response) => {
       );
   }
 };
+
+//get users all conversations on the specific store;

@@ -15,6 +15,8 @@ interface conversationSchemaObject extends Document {
   amount: String;
   role: UserRole;
   message: string;
+  senderName: string;
+  senderProfile: string;
   prescriptionImage: string;
 }
 
@@ -41,6 +43,14 @@ const ConversationSchema: Schema<conversationSchemaObject> = new Schema(
       type: String,
     },
     message: {
+      type: String,
+      required: true,
+    },
+    senderName: {
+      type: String,
+      required: true,
+    },
+    senderProfile: {
       type: String,
       required: true,
     },
