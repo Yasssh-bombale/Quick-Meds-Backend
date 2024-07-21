@@ -74,7 +74,7 @@ export const getUserMessages = async (req: Request, res: Response) => {
   }
 };
 
-//finding conversation for storeOwners;
+//finding conversation for storeOwners and get users all conversations on the specific store;;
 
 export const getStoreConversations = async (req: Request, res: Response) => {
   const { userId, clickedUserId } = req.query; //this userId is storeOwners userId;
@@ -130,5 +130,3 @@ export const getStoreConversations = async (req: Request, res: Response) => {
       );
   }
 };
-
-//get users all conversations on the specific store;
