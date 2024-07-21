@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import Conversation from "../models/conversation.model";
 import { Store } from "../models/store.model";
 import User from "../models/user.model";
+import mongoose from "mongoose";
 
 export const createUserMessage = async (req: Request, res: Response) => {
   const { userId, storeId } = req.query;
@@ -75,7 +76,6 @@ export const getUserMessages = async (req: Request, res: Response) => {
 };
 
 //finding conversation for storeOwners and get users all conversations on the specific store;;
-
 export const getStoreConversations = async (req: Request, res: Response) => {
   const { userId, clickedUserId } = req.query; //this userId is storeOwners userId;
   if (!userId) {
@@ -119,6 +119,77 @@ export const getStoreConversations = async (req: Request, res: Response) => {
     const conversations = await Conversation.find({ userId: clickedUserId });
 
     return res.status(200).json(conversations);
+  } catch (error) {
+    console.log(
+      `ERROR:IN CONTROLLER:[CONVERSATION,Fun(getStoreConversations)] ,${error}`
+    );
+    res
+      .status(500)
+      .json(
+        `ERROR: IN CONTROLLER:[CONVERSATION,Fun(getStoreConversations)],${error}`
+      );
+  }
+};
+
+//allowing only storeOwners to create type=order of conversations;
+
+export const createStoreOwnerConversaiton = async (
+  req: Request,
+  res: Response
+) => {
+  try {
+    const { ownerId, clickedUserId } = req.query;
+    const { prescriptionImage, prescription: message, amount } = req.body;
+
+    if (!ownerId || !clickedUserId) {
+      return res.status(403).json("All query params is required");
+    }
+
+    if (!prescriptionImage || !message || !amount) {
+      return res.status(400).json("All fiedls are required");
+    }
+
+    //step1:find the store;
+    //step2:then find all the conversaiton that clicked user made on the above store;
+    //step3:then create owner response as message to thise above finded conversations array;
+
+    //step1:
+    const store = await Store.findOne({ ownerId });
+    if (!store) {
+      return res.status(404).json("No store found");
+    }
+
+    //step2:
+    let conversations = await Conversation.find({ userId: clickedUserId });
+
+    if (conversations.length === 0) {
+      return res.status(404).json("No conversations found");
+    }
+
+    //finding userName and userProfile to display it on conversation page because it is collapsing when we are not passing name and profile we need to give clickedUserProfile and name;
+
+    const user = await User.findById(clickedUserId);
+    if (!user) {
+      return res.status(403).json("Invalid clicked user");
+    }
+
+    const ownerResponse = new Conversation({
+      _id: new mongoose.Types.ObjectId(),
+      storeId: store._id,
+      userId: clickedUserId, //as we fetch conversation based on clickeduser;if we pass here ownerId then it will not be in the same conversation;
+      prescriptionImage,
+      senderName: user.username,
+      senderProfile: user.profilePicture,
+      type: "order",
+      amount,
+      role: "owner",
+      message,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      __v: 0,
+    });
+    await ownerResponse.save();
+    return res.status(201).json(ownerResponse);
   } catch (error) {
     console.log(
       `ERROR:IN CONTROLLER:[CONVERSATION,Fun(getStoreConversations)] ,${error}`
