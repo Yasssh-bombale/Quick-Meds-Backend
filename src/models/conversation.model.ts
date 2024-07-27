@@ -8,6 +8,10 @@ enum MessageType {
   message = "message",
   order = "order",
 }
+enum paymentMode {
+  cash = "cash",
+  online = "online",
+}
 interface conversationSchemaObject extends Document {
   storeId: mongoose.Schema.Types.ObjectId;
   userId: mongoose.Schema.Types.ObjectId;
@@ -16,6 +20,8 @@ interface conversationSchemaObject extends Document {
   role: UserRole;
   message: string;
   senderName: string;
+  isOrdered: boolean;
+  paymentMode: paymentMode;
   senderProfile: string;
   prescriptionImage: string;
 }
@@ -53,6 +59,14 @@ const ConversationSchema: Schema<conversationSchemaObject> = new Schema(
     senderProfile: {
       type: String,
       required: true,
+    },
+    isOrdered: {
+      type: Boolean,
+      default: false,
+    },
+    paymentMode: {
+      type: String,
+      enum: Object.values(paymentMode),
     },
   },
   { timestamps: true }

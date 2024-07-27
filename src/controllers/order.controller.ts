@@ -27,7 +27,6 @@ export const createOrder = async (req: Request, res: Response) => {
       if (!updatedConversation) {
         return res.status(404).json("conversation not found");
       }
-
       return res.status(200).json(updatedConversation);
     }
   } catch (error) {
