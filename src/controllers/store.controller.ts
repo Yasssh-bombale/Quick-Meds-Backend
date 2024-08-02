@@ -36,13 +36,6 @@ export const createStore = async (req: Request, res: Response) => {
         .json({ msg: "You are not allowed to create multiple stores" });
     }
 
-    // check for the storeName because storeName must be unique;
-
-    // const isStoreNameTaken = await Store.findOne({ storeName });
-    // if (isStoreNameTaken) {
-    //   return res.status(401).json({ message: "Store name already taken" });
-    // }
-
     // creating store;
     const store = await Store.create({
       ownerId: user._id,
@@ -61,6 +54,66 @@ export const createStore = async (req: Request, res: Response) => {
     return res
       .status(500)
       .json({ message: "ERROR_IN_CREATE-STORE_CONTROLLER" });
+  }
+};
+
+type UpdateStoreDataType = {
+  storeName?: string | undefined;
+  address?: string | undefined;
+  state?: string | undefined;
+  city?: string | undefined;
+  imageUrl?: string | undefined;
+  mobileNumber?: string | undefined;
+};
+export const updateStore = async (req: Request, res: Response) => {
+  const { userId } = req.query;
+  const { storeName, address, state, city, imageUrl, mobileNumber } = req.body;
+  if (!userId) {
+    return res.status(400).json("userId is required");
+  }
+  try {
+    // update store;
+    // const fieldsToUpdate: UpdateStoreDataType = {
+    //   storeName,
+    //   address,
+    //   state,
+    //   city,
+    //   imageUrl,
+    //   mobileNumber,
+    // };
+
+    // const updateData: Partial<UpdateStoreDataType> = Object.keys(
+    //   fieldsToUpdate
+    // ).reduce((acc, key) => {
+    //   if (fieldsToUpdate[key as keyof UpdateStoreDataType] !== undefined) {
+    //     acc[key as keyof UpdateStoreDataType] =
+    //       fieldsToUpdate[key as keyof UpdateStoreDataType];
+    //   }
+    //   return acc;
+    // }, {} as Partial<UpdateStoreDataType>);
+
+    const updatedStore = await Store.findOneAndUpdate(
+      { ownerId: userId },
+      {
+        $set: {
+          storeName,
+          address,
+          state,
+          city,
+          imageUrl,
+          mobileNumber,
+        },
+      },
+      {
+        new: true,
+      }
+    );
+    return res.status(201).json(updatedStore);
+  } catch (error) {
+    console.log(`ERROR_IN_UPDATE_STORE_CONTROLLER, ${error}`);
+    return res
+      .status(500)
+      .json({ message: "ERROR_IN_UPDATE-STORE_CONTROLLER" });
   }
 };
 
