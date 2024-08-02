@@ -201,3 +201,37 @@ export const createStoreOwnerConversaiton = async (
       );
   }
 };
+
+export const getSpecificConversation = async (req: Request, res: Response) => {
+  const { conversationId, userId } = req.query;
+  if (!conversationId || !userId) {
+    return res.status(400).json("Both conversationId and userId is required");
+  }
+  try {
+    const conversation = await Conversation.findOne({
+      _id: conversationId,
+      userId: userId,
+    });
+    if (!conversation) {
+      return res.status(404).json("No conversation found");
+    }
+
+    //we need to pass store details to;
+    const store = await Store.findById(conversation.storeId);
+    if (!store) {
+      return res.status(404).json("Invalid store");
+    }
+
+    const response = {
+      conversation,
+      store,
+    };
+
+    return res.status(200).json(response);
+  } catch (error) {
+    console.log(`ERROR:IN GETTING SPECIFIC CONVERSATION CONTROLLER:${error}`);
+    return res
+      .status(500)
+      .json("ERROR:IN GETTING SPECIFIC CONVERSATION CONTROLLER");
+  }
+};

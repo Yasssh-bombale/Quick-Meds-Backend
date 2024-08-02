@@ -1,8 +1,16 @@
 import mongoose, { Schema, Document } from "mongoose";
 
+enum PaymentMode {
+  online = "online",
+  cash = "cash",
+}
+
 interface orderSchemaObject extends Document {
+  conversationId: mongoose.Schema.Types.ObjectId;
   storeId: mongoose.Schema.Types.ObjectId;
   userId: mongoose.Schema.Types.ObjectId;
+  razorpay_paymentId: string;
+  paymentMode: PaymentMode;
   storeName: string;
   orderedBy: string; //userName
   userProfile: string;
@@ -12,12 +20,15 @@ interface orderSchemaObject extends Document {
   deliveryCity: string;
   deliveryState: string;
   deliveryAddress: string;
-  isOrderPlaced: boolean;
-  isOrderOutOffStock: boolean;
 }
 
 const OrderSchema: Schema<orderSchemaObject> = new Schema(
   {
+    conversationId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Conversation",
+      required: true,
+    },
     storeId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Store",
@@ -26,6 +37,14 @@ const OrderSchema: Schema<orderSchemaObject> = new Schema(
     userId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
+      required: true,
+    },
+    razorpay_paymentId: {
+      type: String,
+    },
+    paymentMode: {
+      type: String,
+      enum: Object.values(PaymentMode),
       required: true,
     },
     storeName: {
@@ -63,14 +82,6 @@ const OrderSchema: Schema<orderSchemaObject> = new Schema(
     deliveryAddress: {
       type: String,
       required: true,
-    },
-    isOrderPlaced: {
-      type: Boolean,
-      default: false,
-    },
-    isOrderOutOffStock: {
-      type: Boolean,
-      default: false,
     },
   },
   { timestamps: true }
