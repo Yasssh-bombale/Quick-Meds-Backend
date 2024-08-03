@@ -10,6 +10,10 @@ interface storeSchemaObject extends Document {
   city: string;
   imageUrl?: string;
   mobileNumber: string;
+  license: string;
+  adharCard: string;
+  ownerLivePicture: string;
+  isApproved: boolean;
 }
 
 const storeSchema: Schema<storeSchemaObject> = new Schema(
@@ -17,6 +21,18 @@ const storeSchema: Schema<storeSchemaObject> = new Schema(
     ownerId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
+      required: true,
+    },
+    isApproved: {
+      type: Boolean,
+      default: false,
+    },
+    license: {
+      type: String,
+      required: true,
+    },
+    ownerLivePicture: {
+      type: String,
       required: true,
     },
     ownerName: {

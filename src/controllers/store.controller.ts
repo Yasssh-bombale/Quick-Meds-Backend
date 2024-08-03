@@ -1,19 +1,34 @@
 import { Request, Response } from "express";
 import { Store } from "../models/store.model";
-import { UserType } from "../types";
 import User from "../models/user.model";
 
 export const createStore = async (req: Request, res: Response) => {
   try {
     const { userId } = req.params;
-    const { storeName, address, state, city, imageUrl, mobileNumber } =
-      req.body;
+    const {
+      storeName,
+      address,
+      state,
+      city,
+      storeImage: imageUrl,
+      mobileNumber,
+      license,
+      ownerLivePicture,
+    } = req.body;
 
     if (!userId) {
       return res.status(403).json({ message: "userId is not provided" });
     }
 
-    if (!storeName || !address || !state || !city || !mobileNumber) {
+    if (
+      !storeName ||
+      !address ||
+      !state ||
+      !city ||
+      !mobileNumber ||
+      !ownerLivePicture ||
+      !license
+    ) {
       return res.status(401).json({ message: "All fields are required" });
     }
 
@@ -40,6 +55,8 @@ export const createStore = async (req: Request, res: Response) => {
     const store = await Store.create({
       ownerId: user._id,
       ownerName: user.username,
+      license,
+      ownerLivePicture,
       storeName,
       address,
       state,
@@ -48,7 +65,9 @@ export const createStore = async (req: Request, res: Response) => {
       mobileNumber,
     });
 
-    return res.status(201).json({ message: "Store created", store });
+    return res
+      .status(201)
+      .json({ message: "Create store request sent", store });
   } catch (error) {
     console.log(`ERROR_IN_CREATE_STORE_CONTROLLER, ${error}`);
     return res
@@ -57,17 +76,24 @@ export const createStore = async (req: Request, res: Response) => {
   }
 };
 
-type UpdateStoreDataType = {
-  storeName?: string | undefined;
-  address?: string | undefined;
-  state?: string | undefined;
-  city?: string | undefined;
-  imageUrl?: string | undefined;
-  mobileNumber?: string | undefined;
-};
+// type UpdateStoreDataType = {
+//   storeName?: string | undefined;
+//   address?: string | undefined;
+//   state?: string | undefined;
+//   city?: string | undefined;
+//   imageUrl?: string | undefined;
+//   mobileNumber?: string | undefined;
+// };
 export const updateStore = async (req: Request, res: Response) => {
   const { userId } = req.query;
-  const { storeName, address, state, city, imageUrl, mobileNumber } = req.body;
+  const {
+    storeName,
+    address,
+    state,
+    city,
+    storeImage: imageUrl,
+    mobileNumber,
+  } = req.body;
   if (!userId) {
     return res.status(400).json("userId is required");
   }
@@ -138,13 +164,13 @@ export const getAllStores = async (req: Request, res: Response) => {
     const pageSize = 10;
     const skip = (page - 1) * pageSize;
 
-    const stores = await Store.find()
+    const stores = await Store.find({ isApproved: true })
       .sort({ createdAt: -1 })
       .skip(skip)
       .limit(pageSize); //getting latest order
 
     if (stores.length === 0) {
-      return res.status(404).json({ message: "No stores found" });
+      return res.status(404).json({ data: [] });
     }
 
     const total = await Store.countDocuments();
