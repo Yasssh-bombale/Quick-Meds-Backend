@@ -1,6 +1,12 @@
 //https://ideogram.ai/api/images/direct/0lLf097zQPWvmMa5YyHkSg.png
 import mongoose, { Schema, Document } from "mongoose";
 
+enum statusType {
+  pending = "pending",
+  approved = "approved",
+  rejected = "rejected",
+}
+
 interface storeSchemaObject extends Document {
   ownerId: mongoose.Schema.Types.ObjectId;
   ownerName: string;
@@ -14,6 +20,7 @@ interface storeSchemaObject extends Document {
   adharCard: string;
   ownerLivePicture: string;
   isApproved: boolean;
+  status: statusType;
 }
 
 const storeSchema: Schema<storeSchemaObject> = new Schema(
@@ -26,6 +33,11 @@ const storeSchema: Schema<storeSchemaObject> = new Schema(
     isApproved: {
       type: Boolean,
       default: false,
+    },
+    status: {
+      type: String,
+      enum: Object.values(statusType),
+      default: statusType.pending,
     },
     license: {
       type: String,

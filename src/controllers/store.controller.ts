@@ -164,7 +164,7 @@ export const getAllStores = async (req: Request, res: Response) => {
     const pageSize = 10;
     const skip = (page - 1) * pageSize;
 
-    const stores = await Store.find({ isApproved: true })
+    const stores = await Store.find({ status: "approved" })
       .sort({ createdAt: -1 })
       .skip(skip)
       .limit(pageSize); //getting latest order
@@ -218,7 +218,7 @@ export const isUserHasStore = async (req: Request, res: Response) => {
     if (!store) {
       return res.status(404).json({ userHasStore: false });
     }
-    return res.status(200).json({ userHasStore: true });
+    return res.status(200).json({ userHasStore: true, store });
   } catch (error) {
     console.log(`ERROR:IN IS-USER-HAS-STORE-CONTROLLER,${error}`);
     return res.status(500).json("ERROR:IN IS-USER-HAS-STORE-CONTROLLER");
