@@ -21,6 +21,7 @@ interface storeSchemaObject extends Document {
   ownerLivePicture: string;
   isApproved: boolean;
   status: statusType;
+  rejectionReasons: string[];
 }
 
 const storeSchema: Schema<storeSchemaObject> = new Schema(
@@ -75,6 +76,9 @@ const storeSchema: Schema<storeSchemaObject> = new Schema(
     mobileNumber: {
       type: String,
       required: true,
+    },
+    rejectionReasons: {
+      type: [String],
     },
   },
   { timestamps: true }

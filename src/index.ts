@@ -14,6 +14,7 @@ import Conversation from "./models/conversation.model";
 import { Store } from "./models/store.model";
 import Order from "./models/store-orders.model";
 import User from "./models/user.model";
+import bodyParser from "body-parser";
 const app = express();
 const PORT = 8000;
 
@@ -22,6 +23,7 @@ config();
 app.use(cors());
 
 app.use(express.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
 
 app.use("/api/auth", authRouter);
