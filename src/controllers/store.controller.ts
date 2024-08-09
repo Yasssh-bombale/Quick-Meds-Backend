@@ -161,10 +161,25 @@ export const getMyStore = async (req: Request, res: Response) => {
 export const getAllStores = async (req: Request, res: Response) => {
   try {
     const page = parseInt(req.query.page as string) || 1;
+    const searchQuery = (req.query.searchQuery as string) || "";
     const pageSize = 10;
     const skip = (page - 1) * pageSize;
 
-    const stores = await Store.find({ status: "approved" })
+    let query: { status: string; [key: string]: any } = {
+      status: "approved",
+    };
+
+    if (searchQuery) {
+      query.$or = [
+        { storeName: { $regex: searchQuery, $options: "i" } },
+        { address: { $regex: searchQuery, $options: "i" } },
+      ];
+    }
+    // $or: [
+    //   { storeName: { $regex: searchQuery, $options: "i" } },
+    //   { address: { $regex: searchQuery, $options: "i" } },
+    // ],
+    const stores = await Store.find(query)
       .sort({ createdAt: -1 })
       .skip(skip)
       .limit(pageSize); //getting latest order
