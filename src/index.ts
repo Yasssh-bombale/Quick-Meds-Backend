@@ -15,12 +15,33 @@ import { Store } from "./models/store.model";
 import Order from "./models/store-orders.model";
 import User from "./models/user.model";
 import bodyParser from "body-parser";
+import { createServer } from "http";
+import { Server } from "socket.io";
+import { handleSockets } from "./sockets/sockets";
+
 const app = express();
 const PORT = 8000;
 
 config();
+// sockets;
+const server = createServer(app);
+export const io = new Server(server, {
+  cors: {
+    origin: [process.env.FRONT_END_URL as string],
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    credentials: true,
+  },
+});
 
-app.use(cors());
+app.use(
+  cors({
+    origin: [process.env.FRONT_END_URL as string],
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    credentials: true,
+  })
+);
+// handling sockets;
+handleSockets();
 
 app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -128,34 +149,34 @@ app.post("/payment", async (req: Request, res: Response) => {
     //set conversation to be ordered after the payment success and order stored in server;
     conversation.isOrdered = true;
     await conversation.save();
-    let response = {
-      paymentInfo: {
-        paymentId,
-        paymentStatus: payment.status,
-        amountPaid: payment.amount,
-        method: payment.method,
-        currency: payment.currency,
-      },
-      orderInfo: {
-        prescription: order.prescription,
-        prescriptionImage: order.prescriptionImage,
-      },
-      deliveryInfo: {
-        ordered_to: order.storeName,
-        customerName: order.orderedBy,
-        customer_profile: order.userProfile,
-        mobileNumber: order.customerMobileNumber,
-        state: order.deliveryState,
-        city: order.deliveryCity,
-        address: order.deliveryAddress,
-      },
-    };
-    return res.status(200).json(response);
+    // let response = {
+    //   paymentInfo: {
+    //     paymentId,
+    //     paymentStatus: payment.status,
+    //     amountPaid: payment.amount,
+    //     method: payment.method,
+    //     currency: payment.currency,
+    //   },
+    //   orderInfo: {
+    //     prescription: order.prescription,
+    //     prescriptionImage: order.prescriptionImage,
+    //   },
+    //   deliveryInfo: {
+    //     ordered_to: order.storeName,
+    //     customerName: order.orderedBy,
+    //     customer_profile: order.userProfile,
+    //     mobileNumber: order.customerMobileNumber,
+    //     state: order.deliveryState,
+    //     city: order.deliveryCity,
+    //     address: order.deliveryAddress,
+    //   },
+    // };
+    return res.status(200).json(conversation);
   } catch (error) {
     console.log("ERROR:WHILE FETCHING PAYMENT", error);
   }
 });
-app.listen(process.env.PORT, () => {
+server.listen(process.env.PORT, () => {
   MongoConnection();
   console.log(`Backend running on PORT : http://localhost:${process.env.PORT}`);
 });

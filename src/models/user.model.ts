@@ -10,6 +10,8 @@ interface userSchemaObject extends Document {
   state?: string;
   address?: string;
   isAdmin: boolean;
+  socketId: string;
+  isOnline: boolean;
 }
 
 const userSchema: Schema<userSchemaObject> = new mongoose.Schema(
@@ -44,6 +46,14 @@ const userSchema: Schema<userSchemaObject> = new mongoose.Schema(
       type: String,
     },
     isAdmin: {
+      type: Boolean,
+      default: false,
+    },
+    socketId: {
+      type: String,
+      default: null,
+    },
+    isOnline: {
       type: Boolean,
       default: false,
     },
