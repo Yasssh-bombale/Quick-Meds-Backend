@@ -116,7 +116,10 @@ export const getStoreConversations = async (req: Request, res: Response) => {
 
     //step2: if storeOwner clicks anyOneOfthe userMessages/clickedUserIds then send below response;
 
-    const conversations = await Conversation.find({ userId: clickedUserId });
+    const conversations = await Conversation.find({
+      storeId: store._id,
+      userId: clickedUserId,
+    });
 
     return res.status(200).json(conversations);
   } catch (error) {

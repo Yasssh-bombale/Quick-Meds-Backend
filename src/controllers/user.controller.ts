@@ -51,15 +51,15 @@ export const getUpdatedMyUser = async (req: Request, res: Response) => {
     const user = await User.findById(userId);
 
     //check whether the currentSignedIn user is updated their info or not??
-    if (
-      !user ||
-      !user.city ||
-      !user.state ||
-      !user.address ||
-      !user.mobileNumber
-    ) {
-      return res.status(403).json("Kindly update your profile");
-    }
+    // if (
+    //   !user ||
+    //   !user.city ||
+    //   !user.state ||
+    //   !user.address ||
+    //   !user.mobileNumber
+    // ) {
+    //   return res.status(403).json("Kindly update your profile");
+    // }
 
     // if they updated their info;
     return res.status(200).json(user);
